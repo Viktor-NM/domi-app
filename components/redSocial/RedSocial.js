@@ -2,6 +2,20 @@ import { View, Text, StyleSheet } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 
 export default function RedSocial({ id, backColor, title }) {
+	const methodChoose = () => {
+		switch (id) {
+			case 'facebook':
+				console.log(id)
+				break
+			case 'gmail':
+				console.log(id)
+				break
+
+			default:
+				break
+		}
+	}
+
 	return (
 		<View style={{ backgroundColor: backColor, ...styles.cartNetwork }}>
 			{id == 'facebook' ? (
@@ -9,7 +23,9 @@ export default function RedSocial({ id, backColor, title }) {
 			) : (
 				<FontAwesome name="google" size={24} color={'white'} />
 			)}
-			<Text style={styles.network}>{title}</Text>
+			<Text style={styles.network} onPress={methodChoose}>
+				{title}
+			</Text>
 		</View>
 	)
 }
@@ -28,6 +44,6 @@ const styles = StyleSheet.create({
 		paddingVertical: 18,
 		marginVertical: 8,
 		borderRadius: 25,
-		width: '100%',
+		width: '50%',
 	},
 })

@@ -1,223 +1,122 @@
 import react from 'react'
 import { useState } from 'react'
-import {
-	View,
-	Text,
-	Image,
-	TextInput,
-	StyleSheet,
-	TouchableOpacity,
-	Alert,
-} from 'react-native'
+import { View, Text, Image, TextInput, StyleSheet, Button } from 'react-native'
 import fonts from '../assets/theme/index'
 import splashLogo from '../assets/splash-logo'
 
-import { SimpleLineIcons, AntDesign } from '@expo/vector-icons'
 import firebase from '../database/firebase'
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
 
-export default function RegisterUserScreen(props) {
-	const [userInfo, setUserInfo] = useState({
-		name: '',
-		lastName: '',
-		email: '',
-		password: '',
-	})
-	const [modal, setModal] = useState({ name: '', message: '' })
+export default function RegisterUserScreen() {
+  const [userInfo, setUserInfo] = useState({
+    name: '',
+    lastName: '',
+    email: '',
+    password: '',
+  })
 
-	const handleChangeText = (name, value) => {
-		setUserInfo({ ...userInfo, [name]: value })
-	}
+  const handleChangeText = (name, value) => {
+    setUserInfo({ ...userInfo, [name]: value })
+  }
 
-	const createNewUser = () => {
-		if (userInfo.email !== '' && userInfo.password !== '') {
-			firebase.firebase
-				.auth()
-				.createUserWithEmailAndPassword(userInfo.email, userInfo.password)
-				.then((userCredential) => {
-					props.navigation.navigate('MainScreen')
-					const user = userCredential.user
-					console.log(user)
-				})
-				.catch((error) => {
-					console.log(error.message)
-					error.message.includes('auth/invalid-email')
-						? setModal({
-								name: 'Correo electrónico invalido',
-								message:
-									'Por favor ingrese una direccion de correo electrónico valida. 👀',
-						  })
-						: {}
-					error.message.includes('auth/weak-password')
-						? setModal({
-								name: 'Contraseña invalida',
-								message:
-									'Por favor ingrese una contraseña con un mínimo de 6 caracteres. 👀',
-						  })
-						: {}
-					error.message.includes('auth/email-already-in-use')
-						? setModal({
-								name: 'Correo ya registrado',
-								message:
-									'La dirección de correo electrónico ya está en uso por otra cuenta. 👀',
-						  })
-						: {}
-					Alert.alert(modal.name, modal.message)
-				})
-		} else {
-			Alert.alert(
-				'Campos vacíos',
-				'Por favor ingrese todos los datos en los campos correspondientes. 👀'
-			)
-		}
-	}
+  const createNewUser = async () => {
+    console.log(userInfo)
+    if (
+      userInfo.name === '' ||
+      userInfo.lastName === '' ||
+      userInfo.email === '' ||
+      userInfo.password === ''
+    ) {
+      alert('Ingrese todos los campos')
+    } else {
+      await firebase.db.collection('users').add({
+        name: userInfo.name,
+        lastName: userInfo.lastName,
+        email: userInfo.email,
+        password: userInfo.password,
+      })
+      alert('Usuario registrado')
+    }
+  }
 
-	return (
-		<View style={styles.container}>
-			<View style={styles.header}>
-				<Text
-					style={styles.icon}
-					onPress={() => {
-						props.navigation.navigate('LoginUserScreen')
-					}}
-				>
-					<SimpleLineIcons name="arrow-left" size={24} color="black" />
-				</Text>
-				<Image
-					source={{
-						uri: splashLogo.src,
-					}}
-					style={styles.logo}
-				/>
-			</View>
-			<View>
-				<Text style={{ ...fonts.BLACK, ...fonts.H1, ...styles.heading }}>
-					Registro de usuario
-				</Text>
-			</View>
-			<View style={styles.body}>
-				<View style={formStyles.formStyle}>
-					{/* <View style={formStyles.inputGroup}>
-						<TextInput
-							style={formStyles.input}
-							placeholder="Ingrese su nombre"
-							onChangeText={(value) => handleChangeText('name', value)}
-							selectionColor="#DD1415"
-							caretHidden={true}
-						/>
-					</View>
-					<View style={formStyles.inputGroup}>
-						<TextInput
-							style={formStyles.input}
-							placeholder="Ingrese sus apellidos"
-							onChangeText={(value) => handleChangeText('lastName', value)}
-							selectionColor="#DD1415"
-							caretHidden={true}
-						/>
-					</View> */}
-					<View style={formStyles.inputGroup}>
-						<TextInput
-							style={formStyles.input}
-							placeholder="Ingrese su correo electronico"
-							onChangeText={(value) => handleChangeText('email', value)}
-							selectionColor="#DD1415"
-							caretHidden={true}
-						/>
-					</View>
-					<View style={formStyles.inputGroup}>
-						<TextInput
-							style={formStyles.input}
-							placeholder="Ingrese su contraseña"
-							onChangeText={(value) => handleChangeText('password', value)}
-							secureTextEntry={true}
-							selectionColor="#DD1415"
-							caretHidden={true}
-						/>
-					</View>
-					<TouchableOpacity
-						onPress={() => createNewUser()}
-						style={styles.buttonSignin}
-					>
-						<AntDesign name="adduser" size={24} color="white" />
-						<Text style={styles.textButtonSignin}>Crear cuenta</Text>
-					</TouchableOpacity>
-				</View>
-			</View>
-		</View>
-	)
+  return (
+    <View style={styles.container}>
+      <View style={styles.body}>
+        <Text style={{ ...fonts.BLACK, ...fonts.H1 }}>Registro de usuario</Text>
+        <View style={formStyles.formStyle}>
+          <View style={formStyles.inputGroup}>
+            <TextInput
+              style={styles.input}
+              onChangeText={(value) => handleChangeText('name', value)}
+              placeholder="Ingrese su nombre"
+            />
+          </View>
+          <View style={formStyles.inputGroup}>
+            <TextInput
+              style={styles.input}
+              onChangeText={(value) => handleChangeText('lastName', value)}
+              placeholder="Ingrese sus apellidos"
+            />
+          </View>
+          <View style={formStyles.inputGroup}>
+            <TextInput
+              style={styles.input}
+              onChangeText={(value) => handleChangeText('email', value)}
+              placeholder="Ingrese su correo electronico"
+              keyboardType="email-address"
+            />
+          </View>
+          <View style={formStyles.inputGroup}>
+            <TextInput
+              style={styles.input}
+              onChangeText={(value) => handleChangeText('password', value)}
+              placeholder="Ingrese su contraseña"
+              secureTextEntry={true}
+            />
+          </View>
+          <View>
+            <Button title="Siguiente" onPress={() => createNewUser()} />
+          </View>
+        </View>
+      </View>
+    </View>
+  )
 }
 
 const formStyles = StyleSheet.create({
-	inputGroup: {
-		padding: 0,
-		width: '75%',
-	},
-	formStyle: {
-		marginVertical: 34,
-		justifyContent: 'flex-start',
-		flex: 5,
-	},
-	input: {
-		borderBottomWidth: 1,
-		paddingVertical: 18,
-		paddingHorizontal: 10,
-		fontSize: 18,
-		marginVertical: 8,
-		borderRadius: 5,
-		minWidth: '100%',
-		textAlign: 'center',
-	},
+  inputGroup: {
+    padding: 0,
+    marginBottom: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  formStyle: {
+    flex: 1,
+    padding: 35,
+    borderWidth: 1,
+  },
 })
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-	},
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 
-	logo: {
-		width: 250 * 0.8,
-		height: 125 * 0.8,
-		resizeMode: 'cover',
-	},
+  logo: {
+    width: 250 * 0.5,
+    height: 125 * 0.5,
+    resizeMode: 'cover',
+  },
 
-	header: {
-		flex: 1,
-		width: '100%',
-		flexDirection: 'row',
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
+  bannerLogo: {
+    borderWidth: 1,
+  },
 
-	heading: {
-		textTransform: 'uppercase',
-		letterSpacing: 2,
-		fontSize: 28,
-		textAlign: 'center',
-	},
-
-	body: {
-		flex: 5,
-		width: '100%',
-		alignItems: 'center',
-	},
-	icon: {
-		position: 'absolute',
-		left: 0,
-		paddingHorizontal: 16,
-		paddingVertical: 16,
-	},
-	buttonSignin: {
-		backgroundColor: '#DD1415',
-		color: '#fff',
-		padding: 18,
-		borderRadius: 50,
-		marginVertical: 12,
-		flexDirection: 'row-reverse',
-		justifyContent: 'center',
-	},
-	textButtonSignin: {
-		fontSize: 16,
-		color: '#fff',
-		paddingHorizontal: 12,
-	},
+  body: {
+    flex: 1,
+    alignItems: 'center',
+    width: '100%',
+    borderWidth: 1,
+  },
 })

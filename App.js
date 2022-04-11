@@ -8,8 +8,6 @@ const Stack = createStackNavigator()
 import AuthScreen from './screens/AuthScreen'
 import LoginUserScreen from './screens/LoginUserScreen'
 import MainScreen from './screens/MainScreen'
-import RegisterUserScreen from './screens/RegisterUserScreen'
-import ForgotPasswordScreen from './screens/ForgotPasswordScreen.js'
 
 function MyStack() {
 	return (
@@ -22,16 +20,6 @@ function MyStack() {
 			<Stack.Screen
 				name="LoginUserScreen"
 				component={LoginUserScreen}
-				options={{ headerShown: false }}
-			/>
-			<Stack.Screen
-				name="RegisterUserScreen"
-				component={RegisterUserScreen}
-				options={{ headerShown: false }}
-			/>
-			<Stack.Screen
-				name="ForgotPasswordScreen"
-				component={ForgotPasswordScreen}
 				options={{ headerShown: false }}
 			/>
 			<Stack.Screen
